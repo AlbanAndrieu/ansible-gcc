@@ -118,3 +118,9 @@
 - name: cpp | Display cpp link after
   action: command update-alternatives --list gcc
   become: yes
+
+- name: cpp | Install required packages
+  action: "{{ ansible_pkg_mgr }} state={{ util_package_state|default('present') }} name={{ item }}"
+  with_items: cpp_package_list
+  tags: cpp
+  become: yes

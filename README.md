@@ -1,6 +1,6 @@
 ## alban.andrieu.gcc
 
-[![Travis CI](http://img.shields.io/travis/AlbanAndrieu/ansible-gcc.svg?style=flat)](http://travis-ci.org/AlbanAndrieu/ansible-gcc) [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-gcc.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-gcc/tree/master) [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)  [![Ansible Galaxy](http://img.shields.io/badge/galaxy-alban.andrieu.gcc-blue.svg?style=flat)](https://galaxy.ansible.com/list#/roles/1628) [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
+[![Travis CI](http://img.shields.io/travis/AlbanAndrieu/ansible-gcc.svg?style=flat)](http://travis-ci.org/AlbanAndrieu/ansible-gcc) [![Branch](http://img.shields.io/github/tag/AlbanAndrieu/ansible-gcc.svg?style=flat-square)](https://github.com/AlbanAndrieu/ansible-gcc/tree/master) [![Donate](https://img.shields.io/gratipay/AlbanAndrieu.svg?style=flat)](https://www.gratipay.com/AlbanAndrieu)  [![Ansible Galaxy](http://img.shields.io/badge/galaxy-alban.andrieu.gcc-blue.svg?style=flat)](https://galaxy.ansible.com/list#/roles/28260) [![Platforms](http://img.shields.io/badge/platforms-ubuntu-lightgrey.svg?style=flat)](#)
 
 Ensures that gcc is installed (using `apt`)
 
