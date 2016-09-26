@@ -1,0 +1,4 @@
+
+gcc_enabled: yes                       # Enable module
+
+gcc_priority: 50

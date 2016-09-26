@@ -1,0 +1,120 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Include OS specific vars
+  tags: java
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: cpp | Install C++ toolchain PPA
+  apt_repository: repo='ppa:ubuntu-toolchain-r/test' update_cache=yes
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+  tags: cpp
+  become: yes
+
+- name: cpp | Install C++ compiler (Debian based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ gcc_pkg_state|default('present') }}"
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  with_items:
+   - gcc{{ gcc_version }}
+   - g++{{ gcc_version }}
+  tags: cpp
+  become: yes
+
+#https://superuser.com/questions/381160/how-to-install-gcc-4-7-x-4-8-x-on-centos
+#gcc 4.7.2
+#So you could simply use his repo and install just gcc, instantly.
+#cd /etc/yum.repos.d
+#sudo wget http://people.centos.org/tru/devtools-1.1/devtools-1.1.repo
+#sudo yum --enablerepo=testing-1.1-devtools-6 install devtoolset-1.1-gcc devtoolset-1.1-gcc-c++
+
+#sudo wget http://people.centos.org/tru/devtools-2/devtools-2.repo -O /etc/yum.repos.d/devtools-2.repo
+#sudo yum install devtoolset-2-gcc devtoolset-2-binutils devtoolset-2-gcc-c++
+
+#export CC=/opt/centos/devtoolset-1.1/root/usr/bin/gcc
+#export CPP=/opt/centos/devtoolset-1.1/root/usr/bin/cpp
+#export CXX=/opt/centos/devtoolset-1.1/root/usr/bin/c++
+
+#sudo yum install devtoolset-1.1
+#sudo yum install devtoolset-2 --skip-broken
+#sudo yum install devtoolset-3
+
+- name: cpp | Install C++ compiler (RedHat based)
+  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ gcc_pkg_state|default('present') }}"
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  with_items:
+   - gcc{{ gcc_version }}
+   - gcc-c++{{ gcc_version }}
+  tags: cpp
+  become: yes
+
+- name: cpp | Set cpp link to gcc
+  set_fact: cpp_dir=/usr/bin/
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: cpp | Set cpp link to gcc version
+  set_fact: cpp_version={{ gcc_version }}
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+#- name: cpp | Set cpp link to gcc version
+#  set_fact: cpp_version=4.4.7
+#  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: cpp | Display cpp link before
+  action: command update-alternatives --display gcc
+  changed_when: false
+  become: yes
+  ignore_errors: true
+
+#sudo update-alternatives --remove-all gcc
+#sudo update-alternatives --remove-all cpp
+#sudo update-alternatives --remove-all g++
+
+#TODO : Waiting ansible 2.2 to manage priority https://docs.ansible.com/ansible/alternatives_module.html
+# priority={{ item.priority }}
+- name: cpp | Configure cpp alternatives
+  alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
+  with_items:
+  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc{{ cpp_version }}", priority: "{{ gcc_priority }}" }
+  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp{{ cpp_version }}", priority: "{{ gcc_priority }}" }
+  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++{{ cpp_version }}", priority: "{{ gcc_priority }}" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.9", priority: "20" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.9", priority: "20" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.9", priority: "20" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.8", priority: "10" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.8", priority: "10" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.8", priority: "10" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.7", priority: "0" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.7", priority: "0" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.7", priority: "0" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.6", priority: "-10" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.6", priority: "-10" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.6", priority: "-10" }
+  when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
+        and
+        not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
+  become: yes
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.9
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.9 40 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.9
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 30 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.8
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.8 30 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.8
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 30 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 20 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.7
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.7 20 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.7
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 20 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7
+
+#sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.6
+#sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.6 10 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.6
+#sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.6 10 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6
+
+#sudo update-alternatives --config gcc
+#sudo update-alternatives --config cpp
+#sudo update-alternatives --config g++
+
+#ls -la /etc/alternatives/gcc*
+- name: cpp | Display cpp link after
+  action: command update-alternatives --list gcc
+  become: yes
