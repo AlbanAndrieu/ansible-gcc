@@ -4,4 +4,4 @@
 #gcc_version: "=4.9.3-8ubuntu2~14.04"
 gcc_version: "-5"
 
-cpp_package_list: []
+gcc_package_list: []

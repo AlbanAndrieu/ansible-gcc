@@ -2,22 +2,22 @@
 # This playbook contains common plays that will be run on all nodes.
 
 - name: Include OS specific vars
-  tags: java
+  tags: gcc
   include_vars: "{{ ansible_os_family }}.yml"
 
-- name: cpp | Install C++ toolchain PPA
+- name: gcc | Install C++ toolchain PPA
   apt_repository: repo='ppa:ubuntu-toolchain-r/test' update_cache=yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  tags: cpp
+  tags: gcc
   become: yes
 
-- name: cpp | Install C++ compiler (Debian based)
+- name: gcc | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ gcc_pkg_state|default('present') }}"
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
   with_items:
    - gcc{{ gcc_version }}
    - g++{{ gcc_version }}
-  tags: cpp
+  tags: gcc
   become: yes
 
 #https://superuser.com/questions/381160/how-to-install-gcc-4-7-x-4-8-x-on-centos
@@ -38,28 +38,28 @@
 #sudo yum install devtoolset-2 --skip-broken
 #sudo yum install devtoolset-3
 
-- name: cpp | Install C++ compiler (RedHat based)
+- name: gcc | Install C++ compiler (RedHat based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ gcc_pkg_state|default('present') }}"
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
   with_items:
    - gcc{{ gcc_version }}
    - gcc-c++{{ gcc_version }}
-  tags: cpp
+  tags: gcc
   become: yes
 
-- name: cpp | Set cpp link to gcc
-  set_fact: cpp_dir=/usr/bin/
+- name: gcc | Set gcc link to gcc
+  set_fact: gcc_dir=/usr/bin/
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: cpp | Set cpp link to gcc version
+- name: gcc | Set gcc link to gcc version
   set_fact: cpp_version={{ gcc_version }}
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-#- name: cpp | Set cpp link to gcc version
+#- name: gcc | Set gcc link to gcc version
 #  set_fact: cpp_version=4.4.7
 #  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-- name: cpp | Display cpp link before
+- name: gcc | Display gcc link before
   action: command update-alternatives --display gcc
   changed_when: false
   become: yes
@@ -71,25 +71,25 @@
 
 #TODO : Waiting ansible 2.2 to manage priority https://docs.ansible.com/ansible/alternatives_module.html
 # priority={{ item.priority }}
-- name: cpp | Configure cpp alternatives
+- name: gcc | Configure gcc alternatives
   alternatives: name={{ item.name }} link={{ item.link }} path={{ item.path }}
   with_items:
-  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc{{ cpp_version }}", priority: "{{ gcc_priority }}" }
-  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp{{ cpp_version }}", priority: "{{ gcc_priority }}" }
-  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++{{ cpp_version }}", priority: "{{ gcc_priority }}" }
-#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.9", priority: "20" }
-#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.9", priority: "20" }
-#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.9", priority: "20" }
-#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.8", priority: "10" }
-#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.8", priority: "10" }
-#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.8", priority: "10" }
-#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.7", priority: "0" }
-#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.7", priority: "0" }
-#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.7", priority: "0" }
-#  - { name: gcc, link: /usr/bin/gcc, path: "{{ cpp_dir }}gcc-4.6", priority: "-10" }
-#  - { name: cpp, link: /usr/bin/cpp, path: "{{ cpp_dir }}cpp-4.6", priority: "-10" }
-#  - { name: g++, link: /usr/bin/g++, path: "{{ cpp_dir }}g++-4.6", priority: "-10" }
-  when: not( (cpp_dir is undefined) or (cpp_dir is none) or (cpp_dir | trim == '') )
+  - { name: gcc, link: /usr/bin/gcc, path: "{{ gcc_dir }}gcc{{ cpp_version }}", priority: "{{ gcc_priority }}" }
+  - { name: cpp, link: /usr/bin/cpp, path: "{{ gcc_dir }}cpp{{ cpp_version }}", priority: "{{ gcc_priority }}" }
+  - { name: g++, link: /usr/bin/g++, path: "{{ gcc_dir }}g++{{ cpp_version }}", priority: "{{ gcc_priority }}" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ gcc_dir }}gcc-4.9", priority: "20" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ gcc_dir }}cpp-4.9", priority: "20" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ gcc_dir }}g++-4.9", priority: "20" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ gcc_dir }}gcc-4.8", priority: "10" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ gcc_dir }}cpp-4.8", priority: "10" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ gcc_dir }}g++-4.8", priority: "10" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ gcc_dir }}gcc-4.7", priority: "0" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ gcc_dir }}cpp-4.7", priority: "0" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ gcc_dir }}g++-4.7", priority: "0" }
+#  - { name: gcc, link: /usr/bin/gcc, path: "{{ gcc_dir }}gcc-4.6", priority: "-10" }
+#  - { name: cpp, link: /usr/bin/cpp, path: "{{ gcc_dir }}cpp-4.6", priority: "-10" }
+#  - { name: g++, link: /usr/bin/g++, path: "{{ gcc_dir }}g++-4.6", priority: "-10" }
+  when: not( (gcc_dir is undefined) or (gcc_dir is none) or (gcc_dir | trim == '') )
         and
         not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
   become: yes
@@ -115,12 +115,12 @@
 #sudo update-alternatives --config g++
 
 #ls -la /etc/alternatives/gcc*
-- name: cpp | Display cpp link after
+- name: gcc | Display gcc link after
   action: command update-alternatives --list gcc
   become: yes
 
-- name: cpp | Install required packages
+- name: gcc | Install required packages
   action: "{{ ansible_pkg_mgr }} state={{ util_package_state|default('present') }} name={{ item }}"
-  with_items: cpp_package_list
-  tags: cpp
+  with_items: "{{ gcc_package_list }}"
+  tags: gcc
   become: yes
