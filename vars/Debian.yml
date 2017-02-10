@@ -4,7 +4,7 @@
 #gcc_version: "=4.9.3-8ubuntu2~14.04"
 gcc_version: "-5"
 
-gcc_package_list: [
+gcc_package_list:
  - gcc-opt
  - gcc-doc
  - gcovr
@@ -23,4 +23,3 @@ gcc_package_list: [
 #  - libc6-dev-i386
 #  - ia32-libs
 #  - lib32stdc++6
-]
