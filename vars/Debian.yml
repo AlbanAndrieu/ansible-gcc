@@ -4,4 +4,23 @@
 #gcc_version: "=4.9.3-8ubuntu2~14.04"
 gcc_version: "-5"
 
-gcc_package_list: []
+gcc_package_list: [
+ - gcc-opt
+ - gcc-doc
+ - gcovr
+ - valkyrie
+ - valgrind
+# - eclipse-cdt-valgrind-remote
+# - eclipse-cdt-perf
+ - linux-tools-generic
+ - linux-cloud-tools-generic
+#32bits cross compilation
+##  - g++-multilib
+##  - gcc-multilib
+#gcc{{ gcc_version }}-multilib
+#g++{{ gcc_version }}-multilib
+#  - libc6-i386
+#  - libc6-dev-i386
+#  - ia32-libs
+#  - lib32stdc++6
+]
