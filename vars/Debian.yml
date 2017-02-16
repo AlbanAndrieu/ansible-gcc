@@ -14,6 +14,7 @@ gcc_package_list:
 # - eclipse-cdt-perf
  - linux-tools-generic
  - linux-cloud-tools-generic
+ - flawfinder
 #32bits cross compilation
 ##  - g++-multilib
 ##  - gcc-multilib
