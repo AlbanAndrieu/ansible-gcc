@@ -15,8 +15,9 @@ gcc_package_list:
  - linux-tools-generic
  - linux-cloud-tools-generic
  - flawfinder
- - complexity
+# - complexity
  - colormake
+ - colorgcc
 #32bits cross compilation
 ##  - g++-multilib
 ##  - gcc-multilib
