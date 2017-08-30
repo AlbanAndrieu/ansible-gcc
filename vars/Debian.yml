@@ -2,7 +2,8 @@
 #gcc_version: "=4:4.6.3-1ubuntu5"
 #gcc_version: "=4:4.8.2-1ubuntu6"
 #gcc_version: "=4.9.3-8ubuntu2~14.04"
-gcc_version: "-5"
+#gcc_version: "-5"
+gcc_version: ""
 
 gcc_package_list:
  - gcc-opt
