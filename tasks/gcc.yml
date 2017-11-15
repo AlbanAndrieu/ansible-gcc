@@ -122,7 +122,8 @@
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   action: command update-alternatives --list gcc
   become: yes
-
+  ignore_errors: true
+  
 - name: gcc | Install required packages
   action: "{{ ansible_pkg_mgr }} state={{ util_package_state|default('present') }} name={{ item }}"
   with_items: "{{ gcc_package_list }}"
