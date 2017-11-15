@@ -93,8 +93,7 @@
 #  - { name: g++, link: /usr/bin/g++, path: "{{ gcc_dir }}g++-4.6", priority: "-10" }
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
         and not( (gcc_dir is undefined) or (gcc_dir is none) or (gcc_dir | trim == '') )
-        and
-        not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
+        and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
   become: yes
 
 #sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.9
@@ -118,9 +117,11 @@
 #sudo update-alternatives --config g++
 
 #ls -la /etc/alternatives/gcc*
-- name: gcc | Display gcc link after
-  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+- name: gcc | Display gcc link after  
   action: command update-alternatives --list gcc
+  when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
+        and not( (gcc_dir is undefined) or (gcc_dir is none) or (gcc_dir | trim == '') )
+        and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )  
   become: yes
   ignore_errors: true
   
