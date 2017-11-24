@@ -23,10 +23,24 @@ install:
   - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible-lint; fi
   
   # Add ansible.cfg to pick up roles path.
-  #- "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+  
 script:
+  # Check ansible version
   - ansible --version
-  - export ANSIBLE_ROLES_PATH="./"
-#  - echo localhost > inventory
+  #- export ANSIBLE_ROLES_PATH="../"
+
+  # Check syntax
   - ansible-playbook -i hosts --syntax-check gcc.yml
+
+  # First run  
   - ansible-playbook -i hosts --connection=local --sudo -vvvv gcc.yml
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
+  email:
+    recipients:
+      - alban.andrieu@nabla.mobi
+#      - other@example.com
+    on_success: [always|never|change] # default: change
+    on_failure: [always|never|change] # default: always
