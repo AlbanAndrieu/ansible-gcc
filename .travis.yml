@@ -25,7 +25,7 @@ install:
   # Add ansible.cfg to pick up roles path.
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 script:
-  - sudo ansible --version
+  - ansible --version
   - export ANSIBLE_ROLES_PATH="../"
 #  - echo localhost > inventory
   - ansible-playbook -i hosts --syntax-check gcc.yml
