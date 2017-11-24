@@ -1,6 +1,6 @@
 ---
 # This playbook contains common plays that will be run on all nodes.
 
-- import_tasks: gcc.yml
+- include: gcc.yml
   when: gcc_enabled
   tags: [gcc]
