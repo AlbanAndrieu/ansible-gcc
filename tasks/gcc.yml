@@ -13,7 +13,7 @@
   ignore_errors: true
 
 - name: gcc | Install C++ compiler (Debian based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ gcc_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ gcc_pkg_state|default('present') }}"
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
   with_items:
    - gcc{{ gcc_version }}
@@ -40,7 +40,7 @@
 #sudo yum install devtoolset-3
 
 - name: gcc | Install C++ compiler (RedHat based)
-  action: "{{ ansible_pkg_mgr}} name={{ item }} update_cache=yes state={{ gcc_pkg_state|default('present') }}"
+  action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ gcc_pkg_state|default('present') }}"
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
   with_items:
    - gcc{{ gcc_version }}
@@ -117,14 +117,14 @@
 #sudo update-alternatives --config g++
 
 #ls -la /etc/alternatives/gcc*
-- name: gcc | Display gcc link after  
+- name: gcc | Display gcc link after
   action: command update-alternatives --list gcc
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
         and not( (gcc_dir is undefined) or (gcc_dir is none) or (gcc_dir | trim == '') )
-        and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )  
+        and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
   become: yes
   ignore_errors: true
-  
+
 - name: gcc | Install required packages
   action: "{{ ansible_pkg_mgr }} state={{ util_package_state|default('present') }} name={{ item }}"
   with_items: "{{ gcc_package_list }}"
