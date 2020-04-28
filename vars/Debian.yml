@@ -18,7 +18,7 @@ gcc_package_list:
  - flawfinder
 # - complexity
  - colormake
- - colorgcc
+# - colorgcc
 #32bits cross compilation
 ##  - g++-multilib
 ##  - gcc-multilib
