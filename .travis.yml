@@ -2,9 +2,8 @@
 language: python
 python: "2.7"
 env:
-  - ANSIBLE_VERSION=latest
-  - ANSIBLE_VERSION=2.3.1.0
-  - ANSIBLE_VERSION=2.2.2.0  
+#  - ANSIBLE_VERSION=latest
+  - ANSIBLE_VERSION=2.9.7
 cache: bundler
 #sudo: false
 sudo: required
@@ -21,10 +20,10 @@ install:
   # Install Ansible.
   - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
   - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible-lint; fi
-  
+
   # Add ansible.cfg to pick up roles path.
   - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
-  
+
 script:
   # Check ansible version
   - ansible --version
@@ -33,8 +32,8 @@ script:
   # Check syntax
   - ansible-playbook -i hosts --syntax-check gcc.yml
 
-  # First run  
-  - ansible-playbook -i hosts --connection=local --sudo -vvvv gcc.yml
+  # First run
+  - ansible-playbook -i hosts --connection=local -vvvv gcc.yml
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
