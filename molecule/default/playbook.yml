@@ -2,4 +2,6 @@
 - name: Converge
   hosts: all
   roles:
-    - role: alban.andrieu.gcc
+    - role: albanandrieu.gcc
+      verbose: true
+  no_log: false
