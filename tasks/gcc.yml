@@ -165,6 +165,7 @@
   action: "{{ ansible_pkg_mgr }} state={{ util_package_state|default('present') }} name={{ item }}"
   with_items: "{{ gcc_package_list }}"
   become: yes
+  ignore_errors: true
   tags:
     - package
     - gcc
