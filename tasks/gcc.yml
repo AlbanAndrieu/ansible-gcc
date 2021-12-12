@@ -8,9 +8,11 @@
 - name: gcc | Install C++ toolchain PPA
   apt_repository: repo='ppa:ubuntu-toolchain-r/test' update_cache=yes
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
-  tags: gcc
   become: yes
   ignore_errors: true
+  tags:
+    - package
+    - gcc
 
 - name: gcc | Install C++ compiler (Debian based)
   action: "{{ ansible_pkg_mgr}} name={{ item }} state={{ gcc_pkg_state|default('present') }}"
@@ -18,8 +20,10 @@
   with_items:
    - gcc{{ gcc_version }}
    - g++{{ gcc_version }}
-  tags: gcc
   become: yes
+  tags:
+    - package
+    - gcc
 
 #https://superuser.com/questions/381160/how-to-install-gcc-4-7-x-4-8-x-on-centos
 #gcc 4.7.2
@@ -45,8 +49,10 @@
   with_items:
    - gcc{{ gcc_version }}
    - gcc-c++{{ gcc_version }}
-  tags: gcc
   become: yes
+  tags:
+    - package
+    - gcc
 
 - name: gcc | Set gcc link to gcc
   set_fact: gcc_dir=/usr/bin/
@@ -66,6 +72,10 @@
   changed_when: false
   become: yes
   ignore_errors: true
+  tags:
+    - alternatives
+    - gcc
+    - vm
 
 #sudo update-alternatives --remove-all gcc
 #sudo update-alternatives --remove-all cpp
@@ -96,6 +106,10 @@
         and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
         and ansible_distribution_version is version('18.10', '<=')
   become: yes
+  tags:
+    - alternatives
+    - gcc
+    - vm
 
 #sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 40 --slave /usr/bin/gcc gcc /usr/bin/gcc-4.9
 #sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-4.9 40 --slave /usr/bin/cpp cpp /usr/bin/cpp-4.9
@@ -121,7 +135,7 @@
 
 - name: gcc | Configure gcc alternatives
   #action: command name={{ item.name }} link={{ item.link }} path={{ item.path }}
-  action: command --install {{ gcc_dir }}/{{ item.name }} {{ item.name }} {{ item.link }}/gcc{{ item.version }} {{ gcc_priority }} --slave {{ item.link }}/g++ g++ {{ item.link }}/g++{{ item.version }} --slave {{ item.link }}/gcov gcov {{ item.link }}/gcov{{ item.version }}
+  action: command update-alternatives --install {{ gcc_dir }}/{{ item.name }} {{ item.name }} {{ item.link }}/gcc{{ item.version }} {{ gcc_priority }} --slave {{ item.link }}/g++ g++ {{ item.link }}/g++{{ item.version }} --slave {{ item.link }}/gcov gcov {{ item.link }}/gcov{{ item.version }}
   with_items:
   - { name: gcc, link: /usr/bin/, path: "{{ gcc_dir }}gcc{{ cpp_version }}", version: "{{ gcc_version }}", priority: "{{ gcc_priority }}" }
   when: (ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu')
@@ -129,6 +143,10 @@
         and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
         and ansible_distribution_version is version('19.04', '>=')
   become: yes
+  tags:
+    - alternatives
+    - gcc
+    - vm
 
 #ls -la /etc/alternatives/gcc*
 - name: gcc | Display gcc link after
@@ -138,9 +156,15 @@
         and not( (cpp_version is undefined) or (cpp_version is none) or (cpp_version | trim == '') )
   become: yes
   ignore_errors: true
+  tags:
+    - alternatives
+    - gcc
+    - vm
 
 - name: gcc | Install required packages
   action: "{{ ansible_pkg_mgr }} state={{ util_package_state|default('present') }} name={{ item }}"
   with_items: "{{ gcc_package_list }}"
-  tags: gcc
   become: yes
+  tags:
+    - package
+    - gcc
